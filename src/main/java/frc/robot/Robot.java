@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.motorcontrol.PWMVictorSPX;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -30,8 +31,8 @@ public class Robot extends TimedRobot {
   private PWMVictorSPX leftbackmotor;
   private PWMVictorSPX rightbackmotor;
 
-  private PWMVictorSPX doormotor;
-
+  MotorControllerGroup leftMotors_;
+  MotorControllerGroup rightMotors_;
   SpeedControllerGroup leftmotors;
   SpeedControllerGroup rightmotors;
   DifferentialDrive drivebase;
@@ -39,24 +40,25 @@ public class Robot extends TimedRobot {
   Joystick controller1;
 
   Timer autonomoustimer;
-  
-  /** 
+
+  /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
    */
   @Override
   public void robotInit() {
-   leftfrontmotor = new PWMVictorSPX(0);
-   leftbackmotor = new PWMVictorSPX(1);
-   rightfrontmotor = new PWMVictorSPX(2);
-   rightbackmotor = new PWMVictorSPX(3);
-   doormotor = new PWMVictorSPX(4);
+    leftfrontmotor = new PWMVictorSPX(0);
+    leftbackmotor = new PWMVictorSPX(1);
+    rightfrontmotor = new PWMVictorSPX(2);
+    rightbackmotor = new PWMVictorSPX(3);
 
-  leftmotors = new SpeedControllerGroup(leftfrontmotor, leftbackmotor);
-  rightmotors = new SpeedControllerGroup(rightbackmotor, rightfrontmotor);
-  drivebase = new DifferentialDrive(leftmotors, rightmotors);
-  controller1 = new Joystick(0);
-
+    leftMotors_ = new MotorControllerGroup(leftfrontmotor, leftbackmotor);
+    rightMotors_ = new MotorControllerGroup(rightfrontmotor, rightbackmotor);
+    drivebase = new DifferentialDrive(leftMotors_, rightMotors_);
+    // leftmotors = new SpeedControllerGroup(leftfrontmotor, leftbackmotor);
+    // rightmotors = new SpeedControllerGroup(rightbackmotor, rightfrontmotor);
+    // drivebase = new DifferentialDrive(leftmotors, rightmotors);
+    controller1 = new Joystick(0);
   }
 
   /**
@@ -64,7 +66,8 @@ public class Robot extends TimedRobot {
    * this for items like diagnostics that you want ran during disabled,
    * autonomous, teleoperated and test.
    *
-   * <p>This runs after the mode specific periodic functions, but before
+   * <p>
+   * This runs after the mode specific periodic functions, but before
    * LiveWindow and SmartDashboard integrated updating.
    */
   @Override
@@ -78,7 +81,8 @@ public class Robot extends TimedRobot {
    * LabVIEW Dashboard, remove all of the chooser code and uncomment the
    * getString line to get the auto name from the text box below the Gyro
    *
-   * <p>You can add additional auto modes by adding additional comparisons to
+   * <p>
+   * You can add additional auto modes by adding additional comparisons to
    * the switch structure below with additional strings. If using the
    * SendableChooser make sure to add them to the chooser code above as well.
    */
@@ -93,21 +97,19 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    if( autonomoustimer.get() < 2 ){ // less than 3 seconds
+    if (autonomoustimer.get() < 2) { // less than 3 seconds
       drivebase.arcadeDrive(0.5, 0);
     }
 
-    if( (autonomoustimer.get() >= 2) && (autonomoustimer.get() < 4) ){
+    if ((autonomoustimer.get() >= 2) && (autonomoustimer.get() < 4)) {
       drivebase.arcadeDrive(0, 0);
     }
 
-    if( (autonomoustimer.get() >= 4) && (autonomoustimer.get() < 5) ){
-      doormotor.set(-0.7);
+    if ((autonomoustimer.get() >= 4) && (autonomoustimer.get() < 5)) {
       drivebase.arcadeDrive(0, 0);
     }
 
-    if(autonomoustimer.get() >5){
-      doormotor.set(0);
+    if (autonomoustimer.get() > 5) {
       drivebase.arcadeDrive(0, 0);
     }
 
@@ -117,22 +119,9 @@ public class Robot extends TimedRobot {
    * This function is called periodically during operator control.
    */
   @Override
-  public void teleopPeriodic() {   
-   drivebase.arcadeDrive(-controller1.getRawAxis(1), controller1.getRawAxis(4),true);
-    
-    if(controller1.getRawButton(4)){
+  public void teleopPeriodic() {
+    drivebase.arcadeDrive(controller1.getRawAxis(4), -controller1.getRawAxis(1), true);
 
-      doormotor.set(0.3);
-    }else {
-
-      if(controller1.getRawButton(1)){
-
-        doormotor.set(-0.3);
-      }else {
-        doormotor.set(0);
-      }
-    
-    }
   }
 
   /**
