@@ -7,10 +7,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.motorcontrol.PWMVictorSPX;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
@@ -26,15 +26,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends TimedRobot {
-  private PWMVictorSPX leftfrontmotor;
-  private PWMVictorSPX rightfrontmotor;
-  private PWMVictorSPX leftbackmotor;
-  private PWMVictorSPX rightbackmotor;
+  private PWMVictorSPX leftFrontMotor;
+  private PWMVictorSPX rightFrontMotor;
+  private PWMVictorSPX leftBackMotor;
+  private PWMVictorSPX rightBackMotor;
 
-  MotorControllerGroup leftMotors_;
-  MotorControllerGroup rightMotors_;
-  SpeedControllerGroup leftmotors;
-  SpeedControllerGroup rightmotors;
+  MotorControllerGroup leftMotorsGroup;
+  MotorControllerGroup rightMotorsGroup;
+
   DifferentialDrive drivebase;
 
   Joystick controller1;
@@ -47,18 +46,18 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    leftfrontmotor = new PWMVictorSPX(0);
-    leftbackmotor = new PWMVictorSPX(1);
-    rightfrontmotor = new PWMVictorSPX(2);
-    rightbackmotor = new PWMVictorSPX(3);
+    leftFrontMotor = new PWMVictorSPX(0);
+    leftBackMotor = new PWMVictorSPX(1);
+    rightFrontMotor = new PWMVictorSPX(2);
+    rightBackMotor = new PWMVictorSPX(3);
 
-    leftMotors_ = new MotorControllerGroup(leftfrontmotor, leftbackmotor);
-    rightMotors_ = new MotorControllerGroup(rightfrontmotor, rightbackmotor);
-    drivebase = new DifferentialDrive(leftMotors_, rightMotors_);
-    // leftmotors = new SpeedControllerGroup(leftfrontmotor, leftbackmotor);
-    // rightmotors = new SpeedControllerGroup(rightbackmotor, rightfrontmotor);
-    // drivebase = new DifferentialDrive(leftmotors, rightmotors);
+    leftMotorsGroup = new MotorControllerGroup(leftFrontMotor, leftBackMotor);
+    rightMotorsGroup = new MotorControllerGroup(rightFrontMotor, rightBackMotor);
+    drivebase = new DifferentialDrive(leftMotorsGroup, rightMotorsGroup);
+
     controller1 = new Joystick(0);
+
+    CameraServer.startAutomaticCapture();
   }
 
   /**
